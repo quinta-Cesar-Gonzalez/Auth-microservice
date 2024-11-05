@@ -25,7 +25,9 @@ const router = Router();
  *       200:
  *         description: User logged in successfully
  */
-router.post('/login', login);
+router.post('/login', (req, res, next) => {
+    login(req, res).catch(next);
+});
 
 /**
  * @swagger
@@ -34,7 +36,9 @@ router.post('/login', login);
  *     summary: Register a new user
  *     tags: [Authentication]
  */
-router.post('/register', register);
+router.post('/register', (req, res, next) => {
+    register(req, res).catch(next);
+});
 
 /**
  * @swagger
