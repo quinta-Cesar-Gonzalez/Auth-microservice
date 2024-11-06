@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document } from "mongoose";
 
 interface IUser extends Document {
   RFC: string;
@@ -19,29 +19,37 @@ interface IUser extends Document {
   tipoUsuario: string;
   client_googleId: string;
   client_secret: string;
-  password: string;
+  password?: string;
 }
 
-const UserSchema: Schema = new Schema({
-  RFC: { type: String, default: "" },
-  nombre: { type: String, default: "" },
-  CP: { type: String, default: "" },
-  calle: { type: String, default: "" },
-  noexterior: { type: String, default: "" },
-  nointerior: { type: String, default: "" },
-  colonia: { type: String, default: "" },
-  estado: { type: String, default: "" },
-  localidad: { type: String, default: "" },
-  municipio: { type: String, default: "" },
-  telefono: { type: String, default: "" },
-  celular: { type: String, default: "" },
-  email: { type: String, default: "" },
-  sucursal: { type: String, default: "" },
-  area: { type: String, default: "" },
-  tipoUsuario: { type: String, default: "" },
-  client_googleId: { type: String, default: "" },
-  client_secret: { type: String, default: "" },
-  password: { type: String, required: true },
-});
+const UserSchema: Schema = new Schema(
+  {
+    RFC: { type: String, default: "" },
+    nombre: { type: String, default: "" },
+    CP: { type: String, default: "" },
+    calle: { type: String, default: "" },
+    noexterior: { type: String, default: "" },
+    nointerior: { type: String, default: "" },
+    colonia: { type: String, default: "" },
+    estado: { type: String, default: "" },
+    localidad: { type: String, default: "" },
+    municipio: { type: String, default: "" },
+    telefono: { type: String, default: "" },
+    celular: { type: String, default: "" },
+    email: { type: String, default: "" },
+    sucursal: { type: String, default: "" },
+    area: { type: String, default: "" },
+    tipoUsuario: { type: String, default: "" },
+    client_googleId: { type: String, default: "" },
+    client_secret: { type: String, default: "" },
+    password: {
+      type: String,
+      required: function (this: IUser) {
+        return !this.client_googleId;
+      },
+    },
+  },
+  { collection: "usuarios" }
+);
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model<IUser>("User", UserSchema);
