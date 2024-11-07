@@ -42,12 +42,7 @@ const UserSchema: Schema = new Schema(
     tipoUsuario: { type: String, default: "" },
     client_googleId: { type: String, default: "" },
     client_secret: { type: String, default: "" },
-    password: {
-      type: String,
-      required: function (this: IUser) {
-        return !this.client_googleId;
-      },
-    },
+    password: { type: String, default: "" },
   },
   { collection: "usuarios" }
 );

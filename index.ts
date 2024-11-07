@@ -5,15 +5,18 @@ import session from 'express-session';
 import swaggerUi from 'swagger-ui-express';
 import { swaggerSpec } from './utils/swagger';
 import authRoutes from './routes/authRoutes';
+import companyRoutes from './routes/companyRoutes';
+import emailRoutes from './routes/emailRoutes';
 import connectDB from './config/database';
 import './config/passport';
+import cors from 'cors';
 
 dotenv.config();
 connectDB();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
-
+app.use(cors());
 
 app.use(session({
     secret: process.env.SESSION_SECRET || 'your_session_secret',
@@ -25,11 +28,12 @@ app.use(session({
 app.use(express.json());
 app.use(passport.initialize());
 
-app.use(passport.session()); // Habilita el soporte de sesión en passport
+app.use(passport.session());
 
-app.use('/api/auth', authRoutes); // Monta las rutas en /api/auth
+app.use('/api', emailRoutes);
+app.use('/api/auth', authRoutes);
 app.use('./api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use('/api', companyRoutes);
 
 //Basic endpoint for testing
 app.get('/', (req, res) => {

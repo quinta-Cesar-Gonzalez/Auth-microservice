@@ -31,11 +31,15 @@ const router = Router();
  *     responses:
  *       200:
  *         description: User logged in successfully
+ *       400:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Server error
  */
 router.post("/login", (req, res, next) => {
-  logger.info(`Received login request for email: ${req.body.email}`);
+  logger.info(`[Routes - login]: Received login request`);
   login(req, res).catch((error) => {
-    logger.error(`Error in login route: ${error}`);
+    logger.error(`[Routes - login]: Error processing login request: ${error}`);
     next(error);
   });
 });
@@ -46,11 +50,29 @@ router.post("/login", (req, res, next) => {
  *   post:
  *     summary: Register a new user
  *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: User already exists
+ *       500:
+ *         description: Server error
  */
 router.post("/register", (req, res, next) => {
-  logger.info(`Received registration request for email: ${req.body.email}`);
+  logger.info(`[Routes - register]: Received registration request`);
   register(req, res).catch((error) => {
-    logger.error(`Error in register route: ${error}`);
+    logger.error(`[Routes - register]: Error processing registration request: ${error}`);
     next(error);
   });
 });
@@ -61,36 +83,57 @@ router.post("/register", (req, res, next) => {
  *   get:
  *     summary: Google OAuth login
  *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirects to Google OAuth login page
  */
 router.get("/google", (req, res, next) => {
-  logger.info("Initiating Google OAuth login");
-  logger.debug(`Initiating Google OAuth login, ${req.body} `);
-  passport.authenticate("google", { scope: ["profile", "email"] })(
-    req,
-    res,
-    next
-  );
+  logger.info(`[Routes - google]: Initiating Google OAuth login`);
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 });
 
+/**
+ * @swagger
+ * /api/auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     tags: [Authentication]
+ *     responses:
+ *       302:
+ *         description: Redirects on successful authentication
+ *       500:
+ *         description: Server error
+ */
 router.get(
   "/google/callback",
   passport.authenticate("google", {
     failureRedirect: "https://quintaapp.com.mx:3001/sllmenus.html",
   }),
   (req, res, next) => {
-    logger.info("Google OAuth callback successful");
+    logger.info(`[Routes - googleCallback]: Google OAuth callback successful`);
     googleAuth(req, res).catch((error) => {
-      logger.error(`Error in Google OAuth callback: ${error}`);
+      logger.error(`[Routes - googleCallback]: Error in Google OAuth callback: ${error}`);
       next(error);
     });
   }
 );
 
-// Ruta para obtener todos los usuarios
+/**
+ * @swagger
+ * /api/auth/users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [User Management]
+ *     responses:
+ *       200:
+ *         description: List of all users
+ *       500:
+ *         description: Server error
+ */
 router.get("/users", (req, res, next) => {
-  logger.info("Received request to fetch all users");
+  logger.info(`[Routes - getAllUsers]: Received request to fetch all users`);
   getAllUsers(req, res).catch((error) => {
-    logger.error(`Error in getAllUsers route: ${error}`);
+    logger.error(`[Routes - getAllUsers]: Error fetching users: ${error}`);
     next(error);
   });
 });
@@ -118,9 +161,9 @@ router.get("/users", (req, res, next) => {
  */
 router.delete("/users/:id", (req, res, next) => {
   const { id } = req.params;
-  logger.info(`Received request to delete user with ID: ${id}`);
+  logger.info(`[Routes - deleteUserById]: Received request to delete user with ID: ${id}`);
   deleteUserById(req, res).catch((error) => {
-    logger.error(`Error in deleteUserById route: ${error}`);
+    logger.error(`[Routes - deleteUserById]: Error deleting user with ID ${id}: ${error}`);
     next(error);
   });
 });
